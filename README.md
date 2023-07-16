@@ -34,8 +34,8 @@ That will yield the predictions for the original variables as if they had been f
 # Available constrains
 
 1. "const_sum":
-	- $\sum_1^n a_n=k$
-	- _variables_=[$a_1$, $a_2$, $\cdots$, $a_n$]
+	- $\sum_1 ^n a_n=k$
+	- _variables_=[ $a_1$, $a_2$, $\cdots$, $a_n$]
  	- _params_=[k]
 1. "custom_func":
 	- to be used when none of the above is applicable
