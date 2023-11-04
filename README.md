@@ -21,7 +21,7 @@ To add a new constrain, use the _add\_rule_ method from ConstrainOperator class.
  - _index_: The position to be occupied by the constrain in the constrains sequence (int). Optional
  - _labels_: The names to be assigned to the generated new columns (list[str]). Optional
 
-Then you can encode your dataframe to use the new corrected varibles to feed your model.
+Then you can encode your dataframe to use the new corrected variables to feed your model.
 
 ```new_df=CO.encode_dataframe(df)```
 
@@ -31,12 +31,12 @@ After running your model, you can regenerate the data in the original format, de
 
 That will yield the predictions for the original variables as if they had been fed to the model themselves, but with rather more consistent results
 
-# Available constrains
+## Available constrains
 
 1. "const_sum":
-	- $\sum a_i=k$
+	- $\sum a_i=K$
 	- _variables_=[ $a_1$, $a_2$, $\cdots$, $a_n$]
- 	- _params_=[k]
+ 	- _params_=[K]
 1. "custom_func":
 	- to be used when none of the above is applicable
 	- you have to develop your own functions to operate the dataframe
@@ -45,3 +45,17 @@ That will yield the predictions for the original variables as if they had been f
 		1. _encode\_dataframe_: Create the new custom columns in the dataframe. (df[DataFrame], variables[list], labels[list])->DataFrame
 		1. _decode\_dataframe_: Restore the original columns in the dataframe and calculate the propagated errors. (df[DataFrame], variables[list], labels[list], errors[DataFrame])->DataFrame, DataFrame
 	- _params_=[_validate\_function_, _format\_function_, _encode\_dataframe_, _decode\_dataframe_]
+
+
+## Future additions
+
+In the foreseeable future, some new constrains will be implemented, those are:
+
+1. Addition by scalar
+1. Multiplication by scalar
+1. Variable sum
+1. Conditionals
+
+## Theoretical foundation
+
+All of the worked out mathematics for the developed constrains can be found at the [calculations pdf][./calculations.pdf]
