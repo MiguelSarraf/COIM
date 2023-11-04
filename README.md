@@ -58,4 +58,4 @@ In the foreseeable future, some new constrains will be implemented, those are:
 
 ## Theoretical foundation
 
-All of the worked out mathematics for the developed constrains can be found at the [calculations pdf][calculations.pdf]
+All of the worked out mathematics for the developed constrains can be found at the [calculations pdf](calculations.pdf)
