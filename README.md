@@ -37,6 +37,10 @@ That will yield the predictions for the original variables as if they had been f
 	- $a+K=b$
 	- _variables_=[a, b]
  	- _params_=[K]
+1. "mul_scalar":
+	- $a*K=b$
+	- _variables_=[a, b]
+ 	- _params_=[K]
 1. "const_sum":
 	- $\sum a_i=K$
 	- _variables_=[ $a_1$, $a_2$, $\cdots$, $a_n$]
@@ -55,7 +59,6 @@ That will yield the predictions for the original variables as if they had been f
 
 In the foreseeable future, some new constrains will be implemented, those are:
 
-1. Multiplication by scalar
 1. Variable sum
 1. Conditionals
 

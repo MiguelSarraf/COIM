@@ -1,6 +1,7 @@
 from COIM.constrain_custom import *
 from COIM.constrain_constant_sum import *
 from COIM.constrain_add_scalar import *
+from COIM.constrain_mul_scalar import *
 
 class ConstrainOperator:
 	def __init__(self, name="COIM"):
@@ -8,7 +9,8 @@ class ConstrainOperator:
 		self.operations=[]
 		self.valid_ops={"custom_func": 	Custom,
 						"const_sum": 	ConstantSum,
-						"add_scalar":	AddScalar}
+						"add_scalar":	AddScalar,
+						"mul_scalar":	MulScalar}
 
 	def add_rule(self, operation, variables, params=None, index=None, labels=None):
 		assert operation in self.valid_ops, "Invalid operation"
