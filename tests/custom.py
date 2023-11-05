@@ -10,7 +10,7 @@ k=3
 df=pd.DataFrame(df.T, columns=["n"])
 df["nk"]=k*df["n"]
 print("Orginal dataset")
-print(df)
+print(df.head())
 
 def vali(df, vars, labels):
 	df[labels[0]]=k*df[vars[0]]
@@ -37,12 +37,12 @@ print("Applied rules")
 CO.show_rules()
 new_df=CO.encode_dataframe(df)
 print("Encoded dataset")
-print(new_df)
+print(new_df.head())
 errors=pd.DataFrame([[0.01]], columns=["n"])
 print("Errors")
-print(errors)
+print(errors.head())
 new_df, errors=CO.decode_dataframe(new_df, errors)
 print("Decoded dataset")
-print(new_df)
+print(new_df.head())
 print("Decoded errors")
-print(errors)
+print(errors.head())
