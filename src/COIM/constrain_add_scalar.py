@@ -25,4 +25,4 @@ class AddScalar(Constrain):
 	def decode_dataframe(self, df, errors):
 		df[self.B]=df[self.A]+self.K
 		errors[self.B]=errors[self.A]
-		return df, errors, {}
+		return df, errors

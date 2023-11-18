@@ -13,4 +13,4 @@ class Constrain:
 		return df
 
 	def decode_dataframe(self, df, errors):
-		return df, errors, del_vars
+		return df, errors

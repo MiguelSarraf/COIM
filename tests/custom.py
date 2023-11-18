@@ -29,7 +29,7 @@ def enco(df, vars, labels):
 def deco(df, vars, labels, errors):
 	df[labels[0]]=k*df[vars[0]]
 	errors[labels[0]]=k*errors[vars[0]]
-	return df, errors, set()
+	return df, errors
 
 CO=ConstrainOperator()
 CUST=Custom(["n", "nk"], [vali, form, enco, deco], labels=["kn"])

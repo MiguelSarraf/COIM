@@ -40,9 +40,6 @@ class ConstrainOperator:
 
 	def decode_dataframe(self, df, errors):
 		removed_cols=set()
-		for rule in self.operations:
-			df, errors, remove=rule.decode_dataframe(df, errors)
-			removed_cols=removed_cols.union(remove)
-		df=df.drop(removed_cols, axis=1)
-		errors=errors.drop(removed_cols, axis=1)
+		for rule in self.operations[::-1]:
+			df, errors=rule.decode_dataframe(df, errors)
 		return df, errors

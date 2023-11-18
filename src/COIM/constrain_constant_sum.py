@@ -47,4 +47,6 @@ class ConstantSum(Constrain):
 		errors[self.A0]=(means[self.A0]**2)*(errors["sum"]**.5)
 		for var in self.variables:
 			errors[var]=means[self.A0]*(self.sum-means[var])*errors[self.labels[var]]
-		return df, errors, [self.labels[var] for var in self.variables]+["sum"]
+		df.drop(columns=[self.labels[var] for var in self.variables]+["sum"], inplace=True)
+		errors.drop(columns=[self.labels[var] for var in self.variables]+["sum"], inplace=True)
+		return df, errors

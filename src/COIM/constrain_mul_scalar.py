@@ -38,4 +38,4 @@ class MulScalar(Constrain):
 			df[self.B]=df[self.A]*self.K
 			errors.rename(columns={self.labels[self.A]:self.A}, inplace=True)
 			errors[self.B]=errors[self.A]*self.K
-		return df, errors, {}
+		return df, errors
