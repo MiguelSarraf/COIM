@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 sys.path.insert(1,'../src')
-from COIM.operator import ConstrainOperator
+from COIM.operator import ConstrainOperator, MulScalar
 import numpy as np
 
 df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
@@ -12,8 +12,9 @@ print("Orginal dataset")
 print(df.head())
 
 CO=ConstrainOperator()
+MS=MulScalar(["a", "b"], [10], labels=["new_a"])
 
-CO.add_rule("mul_scalar", ["a", "b"], [10], labels=["new_a"])
+CO.add_rule(MS)
 print("Applied rules")
 CO.show_rules()
 new_df=CO.encode_dataframe(df)

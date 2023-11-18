@@ -1,5 +1,5 @@
 class Constrain:
-	def __init__(self, variables, params, labels):
+	def __init__(self, variables, params, labels=None):
 		self.variables=variables
 		self.params=params
 

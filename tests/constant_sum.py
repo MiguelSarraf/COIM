@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 sys.path.insert(1,'../src')
-from COIM.operator import ConstrainOperator
+from COIM.operator import ConstrainOperator, ConstantSum
 import numpy as np
 
 df=np.random.uniform(low=25, high=38, size=(2,100)).astype("int")
@@ -12,8 +12,9 @@ print("Orginal dataset")
 print(df.head())
 
 CO=ConstrainOperator()
+CS=ConstantSum(["a0", "a1", "a2"], [100], labels=["new_a1", "new_a2"])
 
-CO.add_rule("const_sum", ["a0", "a1", "a2"], [100], labels=["new_a1", "new_a2"])
+CO.add_rule(CS)
 print("Applied rules")
 CO.show_rules()
 new_df=CO.encode_dataframe(df)

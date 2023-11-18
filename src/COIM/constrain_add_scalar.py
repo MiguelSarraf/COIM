@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class AddScalar(Constrain):
-	def __init__(self, variables, params, labels):
+	def __init__(self, variables, params, labels=None):
 		assert not labels, "Labels not needed for add_scalar"
 		assert len(variables)==2, "There must be exactly two variables, a and b"
 		assert len(params)==1, "There must be exactly one param, the scalar"

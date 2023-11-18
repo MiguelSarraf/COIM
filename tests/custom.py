@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 sys.path.insert(1,'../src')
-from COIM.operator import ConstrainOperator
+from COIM.operator import ConstrainOperator, Custom
 import numpy as np
 
 df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
@@ -31,8 +31,9 @@ def deco(df, vars, labels, errors):
 	return df, errors, set()
 
 CO=ConstrainOperator()
+CUST=Custom(["n", "nk"], [vali, form, enco, deco], labels=["kn"])
 
-CO.add_rule("custom_func", ["n", "nk"], [vali, form, enco, deco], labels=["kn"])
+CO.add_rule(CUST)
 print("Applied rules")
 CO.show_rules()
 new_df=CO.encode_dataframe(df)

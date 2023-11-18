@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class Custom(Constrain):
-	def __init__(self, variables, params, labels):
+	def __init__(self, variables, params, labels=None):
 		super().__init__(variables, params, labels)
 		self.validate_function, self.format_function, self.encode_function, self.decode_function=params
 		self.labels=labels

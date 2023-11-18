@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class ConstantSum(Constrain):
-	def __init__(self, variables, params, labels):
+	def __init__(self, variables, params, labels=None):
 		assert not labels or len(labels)==len(variables)-1, "Labels must correspond exactly to the last n-1 variables"
 		super().__init__(variables, params, labels)
 		self.sum=self.params[0]

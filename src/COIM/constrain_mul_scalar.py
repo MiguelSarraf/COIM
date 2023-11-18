@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class MulScalar(Constrain):
-	def __init__(self, variables, params, labels):
+	def __init__(self, variables, params, labels=None):
 		assert not labels or len(labels)==1, "Labels must correspond exactly to the second variables"
 		assert len(variables)==2, "There must be exactly two variables, a and b"
 		assert len(params)==1, "There must be exactly one param, the scalar"

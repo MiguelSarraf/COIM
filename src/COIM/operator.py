@@ -12,9 +12,7 @@ class ConstrainOperator:
 						"add_scalar":	AddScalar,
 						"mul_scalar":	MulScalar}
 
-	def add_rule(self, operation, variables, params=None, index=None, labels=None):
-		assert operation in self.valid_ops, "Invalid operation"
-		rule=self.valid_ops[operation](variables, params, labels)
+	def add_rule(self, rule, index=None):
 		if index:
 			assert isinstance(index, int) and index>=0 and index<len(self.operations), "Index is not valid"
 			self.operations=self.operations[:index]+[rule]+self.operations[index:]
