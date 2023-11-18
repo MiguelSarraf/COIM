@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 sys.path.insert(1,'../src')
-from COIM import ConstrainOperator, AddScalar
+from COIM.operator import ConstrainOperator, AddScalar
 import numpy as np
 
 df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")

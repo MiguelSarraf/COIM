@@ -24,7 +24,8 @@ class MulScalar(Constrain):
 			df[self.labels[self.A]]=df[self.B]
 		else:
 			df[self.labels[self.A]]=df[self.A]
-		return df, {self.A, self.B}
+		df.drop(columns=[self.A, self.B], inplace=True)
+		return df
 
 	def decode_dataframe(self, df, errors):
 		if abs(self.K)<=1:

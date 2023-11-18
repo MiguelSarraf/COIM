@@ -31,7 +31,8 @@ class ConstantSum(Constrain):
 	def encode_dataframe(self, df):
 		for var in self.variables:
 			df[self.labels[var]]=df[var]/(self.sum*df[self.A0])
-		return df, set(self.variables+[self.A0])
+		df.drop(columns=self.variables+[self.A0], inplace=True)
+		return df
 
 	def decode_dataframe(self, df, errors):
 		df["sum"]=0

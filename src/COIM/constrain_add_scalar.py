@@ -19,7 +19,8 @@ class AddScalar(Constrain):
 		return f"{self.A}+{self.K}={self.B}"
 
 	def encode_dataframe(self, df):
-		return df, {self.B}
+		df.drop(columns=self.B, inplace=True)
+		return df
 
 	def decode_dataframe(self, df, errors):
 		df[self.B]=df[self.A]+self.K

@@ -1,3 +1,4 @@
+from tabulate import tabulate
 from COIM.constrain_custom import *
 from COIM.constrain_constant_sum import *
 from COIM.constrain_add_scalar import *
@@ -20,10 +21,8 @@ class ConstrainOperator:
 			self.operations.append(rule)
 
 	def show_rules(self):
-		cont=0
-		for operation in self.operations:
-			print("{:5s} {:50s}".format(str(cont), operation.format_rule()))
-			cont+=1
+		rules_list=[[i, op.format_rule()] for i, op in zip(range(1, len(self.operations)+1), self.operations)]
+		print(tabulate(rules_list, headers=["position", "constrian"], tablefmt="rst"))
 
 	def validate_dataframe(self, df):
 		cont=0
@@ -36,9 +35,7 @@ class ConstrainOperator:
 		df=self.validate_dataframe(df)
 		removed_cols=set()
 		for rule in self.operations:
-			df, remove=rule.encode_dataframe(df)
-			removed_cols=removed_cols.union(remove)
-		df=df.drop(removed_cols, axis=1)
+			df=rule.encode_dataframe(df)
 		return df
 
 	def decode_dataframe(self, df, errors):

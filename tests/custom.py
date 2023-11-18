@@ -23,7 +23,8 @@ def form(vars, labels):
 	return f"{labels[0]}={k}*{vars[0]}"
 
 def enco(df, vars, labels):
-	return df, set([vars[1]])
+	df.drop(columns=list([vars[1]]), inplace=True)
+	return df
 
 def deco(df, vars, labels, errors):
 	df[labels[0]]=k*df[vars[0]]
