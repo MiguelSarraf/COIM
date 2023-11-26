@@ -5,7 +5,6 @@ from COIM.operator import ConstrainOperator, Custom
 import numpy as np
 
 df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
-
 k=3
 df=pd.DataFrame(df.T, columns=["n"])
 df["nk"]=k*df["n"]
@@ -33,18 +32,20 @@ def deco(df, vars, labels, errors):
 
 CO=ConstrainOperator()
 CUST=Custom(["n", "nk"], [vali, form, enco, deco], labels=["kn"])
-
 CO.add_rule(CUST)
-print("Applied rules")
-CO.show_rules()
+
 new_df=CO.encode_dataframe(df)
 print("Encoded dataset")
 print(new_df.head())
+
 errors=pd.DataFrame([[0.01]], columns=["n"])
 print("Errors")
 print(errors.head())
+
 new_df, errors=CO.decode_dataframe(new_df, errors)
 print("Decoded dataset")
 print(new_df.head())
 print("Decoded errors")
 print(errors.head())
+
+CO.summary()
