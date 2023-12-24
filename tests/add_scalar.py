@@ -11,7 +11,7 @@ print("Orginal dataset")
 print(df.head())
 
 CO=ConstrainOperator()
-AD=AddScalar(["a", "b"], [10])
+AD=AddScalar(base_variable="a", target_variable="b", constant=10)
 CO.add_rule(AD)
 
 new_df=CO.encode_dataframe(df)

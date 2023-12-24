@@ -1,9 +1,13 @@
 from COIM.constrain import *
 
 class Custom(Constrain):
-	def __init__(self, variables, params, labels=None):
+	def __init__(self, variables, validate_function, format_function, encode_function, decode_function, labels=None):
+		params=validate_function, format_function, encode_function, decode_function
 		super().__init__(variables, params, labels)
-		self.validate_function, self.format_function, self.encode_function, self.decode_function=params
+		self.validate_function=validate_function
+		self.format_function=format_function
+		self.encode_function=encode_function
+		self.decode_function=decode_function
 		self.labels=labels
 
 	def validate_dataframe(self, df, cont):

@@ -22,7 +22,7 @@ class ConstrainOperator:
 	def show_rules(self, table=None):
 		if not table: table=PrettyTable()
 		table.title=f"{self.name} rules"
-		table.field_names=["Position", "Constrian"]
+		table.field_names=["Position", "Constrain"]
 		table.min_width=self.print_width
 		rules_list=[[i, op.format_rule()] for i, op in zip(range(1, len(self.operations)+1), self.operations)]
 		table.add_rows(rules_list)

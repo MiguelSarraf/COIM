@@ -31,7 +31,7 @@ def deco(df, vars, labels, errors):
 	return df, errors
 
 CO=ConstrainOperator()
-CUST=Custom(["n", "nk"], [vali, form, enco, deco], labels=["kn"])
+CUST=Custom(["n", "nk"], vali, form, enco, deco, labels=["kn"])
 CO.add_rule(CUST)
 
 new_df=CO.encode_dataframe(df)

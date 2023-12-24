@@ -11,7 +11,7 @@ print("Orginal dataset")
 print(df.head())
 
 CO=ConstrainOperator()
-MS=MulScalar(["a", "b"], [10], labels=["new_a"])
+MS=MulScalar(base_variable="a", target_variable="b", constant=10, labels=["new_a"])
 CO.add_rule(MS)
 
 new_df=CO.encode_dataframe(df)

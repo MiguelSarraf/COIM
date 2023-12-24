@@ -11,7 +11,7 @@ print("Orginal dataset")
 print(df.head())
 
 CO=ConstrainOperator()
-CS=ConstantSum(["a0", "a1", "a2"], [10], labels=["new_a1", "new_a2"])
+CS=ConstantSum(variables=["a1", "a2"], reference_variable="a0", constant_sum=10, labels=["new_a1", "new_a2"])
 CO.add_rule(CS)
 
 new_df=CO.encode_dataframe(df)

@@ -1,13 +1,14 @@
 from COIM.constrain import *
 
 class AddScalar(Constrain):
-	def __init__(self, variables, params, labels=None):
+	def __init__(self, base_variable, target_variable, constant, labels=None):
 		assert not labels, "Labels not needed for add_scalar"
-		assert len(variables)==2, "There must be exactly two variables, a and b"
-		assert len(params)==1, "There must be exactly one param, the scalar"
+		variables=[base_variable, target_variable]
+		params=[constant]
 		super().__init__(variables, params, labels)
-		self.K=self.params[0]
-		self.A, self.B=variables
+		self.K=constant
+		self.A=base_variable
+		self.B=target_variable
 
 	def validate_dataframe(self, df, cont):
 		df_filter=df[df[self.B]!=df[self.A]+self.K]

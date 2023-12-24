@@ -1,10 +1,12 @@
 from COIM.constrain import *
 
 class ConstantSum(Constrain):
-	def __init__(self, variables, params, labels=None):
-		assert not labels or len(labels)==len(variables)-1, "Labels must correspond exactly to the last n-1 variables"
+	def __init__(self, variables, reference_variable, constant_sum, labels=None):
+		assert not labels or len(labels)==len(variables), "Labels must correspond exactly to the last n-1 variables"
+		variables=variables+[reference_variable]
+		params=constant_sum
 		super().__init__(variables, params, labels)
-		self.sum=self.params[0]
+		self.sum=constant_sum
 		self.variables=variables[1:]
 		self.A0=variables[0]
 		self.labels={}
