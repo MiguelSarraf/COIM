@@ -1,14 +1,18 @@
 from COIM.constrain import *
 
 class ConstantSum(Constrain):
-	def __init__(self, variables, reference_variable, constant_sum, labels=None):
-		assert not labels or len(labels)==len(variables), "Labels must correspond exactly to the last n-1 variables"
-		variables=variables+[reference_variable]
+	def __init__(self, variables, reference_variable, constant_sum, weights=1, labels=None):
+		assert not labels or len(labels)==len(variables)-1, "Labels must correspond exactly to the last n-1 variables"
+		assert isinstance(weights, (int, float)) or len(weights)==len(variables), "Weights must be a number or a list matching all the variables"
+		variables=variables
 		params=constant_sum
 		super().__init__(variables, params, labels)
 		self.sum=constant_sum
-		self.variables=variables[1:]
-		self.A0=variables[0]
+		self.all_variables=variables[:]
+		variables.remove(reference_variable)
+		self.variables=variables
+		self.A0=reference_variable
+		self.weights=[weights for i in range(len(variables)+1)] if isinstance(weights, (int, float)) else weights
 		self.labels={}
 		if labels:
 			for old, new in zip(self.variables, labels):
@@ -18,9 +22,9 @@ class ConstantSum(Constrain):
 
 	def validate_dataframe(self, df, cont):
 		df["sum"]=0
-		for var in self.variables+[self.A0]:
+		for weight, var in zip(self.weights, self.all_variables):
 			assert var in df, f"Variable {var} not in dataframe"
-			df["sum"]+=df[var]
+			df["sum"]+=df[var]*weight
 		df_filter=df[df["sum"]!=self.sum]
 		if len(df_filter)!=0:
 			raise ValueError(f"The following lines does not conform to rule {cont}\n{df_filter}")
@@ -28,7 +32,10 @@ class ConstantSum(Constrain):
 		return df
 
 	def format_rule(self):
-		return f"{'+'.join([self.A0]+self.variables)}={self.sum}"
+		rule=""
+		for weight, var in zip(self.weights, self.all_variables):
+			rule+="{}*{}+".format(weight, var)
+		return rule[:-1]+"={}".format(self.sum)
 
 	def encode_dataframe(self, df):
 		for var in self.variables:
@@ -39,16 +46,16 @@ class ConstantSum(Constrain):
 	def decode_dataframe(self, df, errors):
 		df["sum"]=0
 		errors["sum"]=0
-		for var in self.variables:
-			df["sum"]+=df[self.labels[var]]
-			errors["sum"]+=errors[self.labels[var]]**2
-		df[self.A0]=self.sum/(1+self.sum*df["sum"])
+		for weight, var in zip(self.weights[1:], self.variables):
+			df["sum"]+=df[self.labels[var]]*weight
+			errors["sum"]+=errors[self.labels[var]]**2*weight**2
+		df[self.A0]=self.sum/(self.weights[0]+self.sum*df["sum"])
 		for var in self.variables:
 			df[var]=df[self.labels[var]]*df[self.A0]*self.sum
 		means=df.aggregate("mean")
 		errors[self.A0]=(means[self.A0]**2)*(errors["sum"]**.5)
-		for var in self.variables:
-			errors[var]=means[self.A0]*(self.sum-means[var])*errors[self.labels[var]]
+		for weight, var in zip(self.weights[1:], self.variables):
+			errors[var]=means[self.A0]*(self.sum-weight*means[var])*errors[self.labels[var]]
 		df.drop(columns=[self.labels[var] for var in self.variables]+["sum"], inplace=True)
 		errors.drop(columns=[self.labels[var] for var in self.variables]+["sum"], inplace=True)
 		return df, errors
