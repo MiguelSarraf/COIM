@@ -5,7 +5,14 @@ from COIM.constrain_add_scalar import *
 from COIM.constrain_mul_scalar import *
 
 class ConstrainOperator:
+	"""
+	Class to orchestrate many rules sequencially
+	"""
 	def __init__(self, name="COIM", print_width=30):
+		"""
+		(str, int)->None
+		Initiallize class parameters
+		"""
 		self.name=name
 		self.operations=[]
 		self.print_width=print_width
@@ -13,6 +20,10 @@ class ConstrainOperator:
 		self._decoded=False
 
 	def add_rule(self, rule, index=None):
+		"""
+		(Constrain, int)->None
+		Insert a rule in the series in the specified position.
+		"""
 		if index:
 			assert isinstance(index, int) and index>=0 and index<len(self.operations), "Index is not valid"
 			self.operations=self.operations[:index]+[rule]+self.operations[index:]
@@ -20,6 +31,10 @@ class ConstrainOperator:
 			self.operations.append(rule)
 
 	def show_rules(self, table=None):
+		"""
+		(PrettyTable)->PrettyTable
+		Create table showing the rules in the sequence
+		"""
 		if not table: table=PrettyTable()
 		table.title=f"{self.name} rules"
 		table.field_names=["Position", "Constrain"]
@@ -29,6 +44,10 @@ class ConstrainOperator:
 		return table
 
 	def show_encode(self, table=None):
+		"""
+		(PrettyTable)->PrettyTable
+		Create table showing the gains on the encoding phase
+		"""
 		if not self._encoded: return
 		if not table: table=PrettyTable()
 		table.title=f"{self.name} encode results"
@@ -39,6 +58,10 @@ class ConstrainOperator:
 		return table
 
 	def show_decode(self, table=None):
+		"""
+		(PrettyTable)->PrettyTable
+		Create table showing the gains on the decoding phase
+		"""
 		if not self._decoded: return
 		if not table: table=PrettyTable()
 		table.title=f"{self.name} decode results"
@@ -48,26 +71,32 @@ class ConstrainOperator:
 		return table
 
 	def summary(self):
+		"""
+		(None)->None
+		Print the summary of the model
+		"""
 		t_rules=str(self.show_rules())
 		t_encode=str(self.show_encode())
 		t_decode=str(self.show_decode())
-		size=t_encode.index("\n")
-		print(t_rules+t_encode[size:]+t_decode[size:])
-
-	def validate_dataframe(self, df):
-		cont=0
-		for rule in self.operations:
-			df=rule.validate_dataframe(df, cont)
-			cont+=1
-		return df
+		result=t_rules
+		if self._encoded: result+=t_encode[t_encode.index("\n"):]
+		if self._decoded: result+=t_decode[t_decode.index("\n"):]
+		print(result)
 
 	def encode_dataframe(self, df):
-		df=self.validate_dataframe(df)
+		"""
+		(DataFrame)->DataFrame
+		Apply all the rules in order
+		"""
+		#sdf=self.validate_dataframe(df)
 		self._encoded=True
 		previous_variance=df.var().sum()
 		previous_cols=len(df.columns)
+		cont=1
 		for rule in self.operations:
+			df=rule.validate_dataframe(df, cont)
 			df=rule.encode_dataframe(df)
+			cont+=1
 		later_variance=df.var().sum()
 		later_cols=len(df.columns)
 		self._variance_gain=1-later_variance/previous_variance
@@ -75,6 +104,10 @@ class ConstrainOperator:
 		return df
 
 	def decode_dataframe(self, df, errors):
+		"""
+		(DataFrame, DataFrame)->DataFrame, DataFrame
+		Deapply all the rules in reverse order and calculate the propagated errors
+		"""
 		self._decoded=True
 		previous_error=(errors/df.mean()).mean().mean()
 		for rule in self.operations[::-1]:
