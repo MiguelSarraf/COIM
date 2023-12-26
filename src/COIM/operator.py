@@ -1,4 +1,5 @@
 from prettytable import PrettyTable
+import pickle
 from COIM.constrain_custom import *
 from COIM.constrain_constant_sum import *
 from COIM.constrain_add_scalar import *
@@ -115,3 +116,38 @@ class ConstrainOperator:
 		later_error=(errors/df.mean()).mean().mean()
 		self._error_value_gain=1-later_error/previous_error
 		return df, errors
+
+	def dump(self, path):
+		"""
+		(str)->None
+		Saves the parameters to a pickle file
+		"""
+		descriptor_dict={
+			"name":self.name,
+			"print_width":self.print_width,
+			"operations":self.operations
+		}
+		file=open(path, "wb")
+		pickle.dump(descriptor_dict, file)
+		file.close()
+
+	def load(self, path, mode="replace"):
+		"""
+		(str, str)->None
+		Retrieves the parameters from a pickle file
+		mode can be 'replace' or 'append'
+		"""
+		assert mode in ["replace", "append"], "mode must be 'replace' or 'append'"
+		file=open(path, "rb")
+		descriptor_dict=pickle.load(file)
+		file.close()
+		self._encoded=False
+		self._decoded=False
+		if mode=="replace":
+			self.name=descriptor_dict["name"]
+			self.print_width=descriptor_dict["print_width"]
+			self.operations=descriptor_dict["operations"]
+		elif mode=="append":
+			self.name-=descriptor_dict["name"]+"_"
+			self.print_width=max(self.print_width, descriptor_dict["print_width"])
+			self.operations.append(descriptor_dict["operations"])
