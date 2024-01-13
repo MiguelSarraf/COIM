@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "COIM"
+version = "0.0.4"
+authors = [
+  { name="Miguel Sarraf", email="miguel.sarraf@alumni.usp.br" },
+]
+description = "A package to encode and decode dataframes given contraints that relate its columns in order to simplify inferential predictions."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "pandas>=1.1.5",
+  "numpy>=1.19.3",
+  "prettytable>=2.5.0"
+]
+classifiers = [
+	"Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Pre-processors"
+]
+
+[project.urls]
+Homepage = "https://github.com/MiguelSarraf/COIM"
+Issues = "https://github.com/MiguelSarraf/COIM/issues"
+

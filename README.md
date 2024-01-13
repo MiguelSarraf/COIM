@@ -7,19 +7,19 @@ Constrain Operator for Inferential Models is a simple tool for pre and pos proce
 To start using COIM, import into your code the operator class, which orquestrates the constrains and define an instance.
 
 ```
-from COIM.operator import ConstrainOperator
+from COIM import ConstrainOperator
 CO=ConstrainOperator()
 ```
 
 To add a new constrain, use the _add\_rule_ method from ConstrainOperator class.
 
-```CO.add_rule(operation, variables, params, index, labels)```
+```
+from COIM import SomeConstrain
+SC=SomeConstrain(**parameters)
+CO.add_rule(SC)
+```
 
- - _operation_: Especifies the constrain to be applied (str)
- - _variables_: The columns names of the variables used in the constrain (list[str])
- - _params_: The columns names of the other parameters used in the constrain (list[str])
- - _index_: The position to be occupied by the constrain in the constrains sequence (int). Optional
- - _labels_: The names to be assigned to the generated new columns (list[str]). Optional
+Each constrain will require their own specific parameters, refer to section _Available constrains_ to know each of them. However, all constrains receive the parameter "labels", which is a list with the new names to be used on the encoded columns.
 
 Then you can encode your dataframe to use the new corrected variables to feed your model.
 
@@ -35,24 +35,27 @@ That will yield the predictions for the original variables as if they had been f
 
 1. "add_scalar":
 	- $a+K=b$
-	- _variables_=[a, b]
- 	- _params_=[K]
+	- base_variable = a
+	- target_variable = b
+	- constant = K
 1. "mul_scalar":
 	- $a*K=b$
-	- _variables_=[a, b]
- 	- _params_=[K]
+	- base_variable = a
+	- target_variable = b
+	- constant = K
 1. "const_sum":
-	- $\sum a_i=K$
-	- _variables_=[ $a_1$, $a_2$, $\cdots$, $a_n$]
- 	- _params_=[K]
+	- $\sum W_i\cdot a_i=K$
+	- variables = $[a_1, a_2, \cdots, a_n]$
+	- reference_variable = $a_j$
+	- constant_sum = K
+	- weights = $[W_1, W_2, \cdots, W_n]$ or $W$ if $W_1=W_2= \cdots= W_n$
 1. "custom_func":
-	- to be used when none of the above is applicable
-	- you have to develop your own functions to operate the dataframe
-		1. _validate\_function_: Function to assert if the received dataframe follows the given constrain. (df[DataFrame], variables[list], labels[list])->bool
-		1. _format\_function_: Write a string that describes the constrain equation. (variables[list], labels[list])->str
-		1. _encode\_dataframe_: Create the new custom columns in the dataframe. (df[DataFrame], variables[list], labels[list])->DataFrame
-		1. _decode\_dataframe_: Restore the original columns in the dataframe and calculate the propagated errors. (df[DataFrame], variables[list], labels[list], errors[DataFrame])->DataFrame, DataFrame
-	- _params_=[_validate\_function_, _format\_function_, _encode\_dataframe_, _decode\_dataframe_]
+	- to be used when none of the above is applicable and you have to develop your own functions to operate the dataframe
+	- variables : list of the variables to be used
+	- _validate\_function_: Function to assert if the received dataframe follows the given constrain. (df[DataFrame], variables[list], labels[list])->bool
+	- _format\_function_: Write a string that describes the constrain equation. (variables[list], labels[list])->str
+	- _encode\_dataframe_: Create the new custom columns in the dataframe. (df[DataFrame], variables[list], labels[list])->DataFrame
+	- _decode\_dataframe_: Restore the original columns in the dataframe and calculate the propagated errors. (df[DataFrame], variables[list], labels[list], errors[DataFrame])->DataFrame, DataFrame
 
 
 ## Future additions
@@ -60,6 +63,7 @@ That will yield the predictions for the original variables as if they had been f
 In the foreseeable future, some new constrains will be implemented, those are:
 
 1. Variable sum
+1. Constant and variable products
 1. Conditionals
 
 ## Theoretical foundation
