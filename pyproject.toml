@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "COIM"
-version = "0.0.4"
+version = "0.0.1"
 authors = [
   { name="Miguel Sarraf", email="miguel.sarraf@alumni.usp.br" },
 ]
@@ -27,9 +27,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Database",
     "Topic :: Scientific/Engineering",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development",
-    "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Pre-processors"
 ]
 
