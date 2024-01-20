@@ -61,7 +61,10 @@ class ConstantSum(Constrain):
 		"""
 		rule=""
 		for weight, var in zip(self.weights, self.all_variables):
-			rule+="{}*{}+".format(weight, var)
+			if weight==1:
+				rule+="{}+".format(var)
+			else:
+				rule+="{}*{}+".format(weight, var)
 		return rule[:-1]+"={}".format(self.sum)
 
 	def encode_dataframe(self, df):
@@ -100,9 +103,11 @@ class ConstantSum(Constrain):
 		means=df.aggregate("mean")
 		"""Delta a_0=a_0^2*sqrt{sum_{j=1}^NW_j^2*Delta a_j'^2}"""
 		errors[self.A0]=(means[self.A0]**2)*(errors["sum"]**.5)
-		"""Delta a_i=a_0(K-W_i*a_i)Delta a_i'"""
+		"""Delta a_i=|(K-W_i*a_i)/(a_0W_i)|*sqrt{a_0^4W_i^2*Delta a_i'^2+Delta a_0^2}'"""
 		for weight, var in zip(self.weights[1:], self.variables):
-			errors[var]=means[self.A0]*(self.sum-weight*means[var])*errors[self.labels[var]]
+			factor=(self.sum-weight*means[var])/(means[self.A0]*weight)
+			error_sum=means[self.A0]**4*weight**2*errors[self.labels[var]]**2+errors[self.A0]**2
+			errors[var]=abs(factor)*error_sum**.5
 
 		#Remove unnecessary columns
 		df.drop(columns=[self.labels[var] for var in self.variables]+["sum"], inplace=True)
