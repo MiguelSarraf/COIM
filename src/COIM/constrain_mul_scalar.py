@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class MulScalar(Constrain):
-	def __init__(self, base_variable, target_variable, constant, labels=None):
+	def __init__(self, base_variable, target_variable, constant, labels=None, precision=1e-10):
 		"""
 		(str, str, float, list)->None
 		Save general parameters of the rule
@@ -13,7 +13,7 @@ class MulScalar(Constrain):
 		#Initialize the supper class
 		variables=[base_variable, target_variable]
 		params=[constant]
-		super().__init__(variables, params, labels)
+		super().__init__(variables, params, labels, precision)
 
 		#Save appropriate parameters
 		self.K=constant

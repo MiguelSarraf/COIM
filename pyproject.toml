@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "COIM"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Miguel Sarraf", email="miguel.sarraf@alumni.usp.br" },
 ]
-description = "A package to encode and decode dataframes given contraints that relate its columns in order to simplify inferential predictions."
+description = "Constrain Operator for Inferential Models is a simple tool for pre and pos processing of data to eliminate redunduncy in datasets caused by dependency rules between the variables/columns."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [

@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class Custom(Constrain):
-	def __init__(self, variables, validate_function, format_function, encode_function, decode_function, labels=None):
+	def __init__(self, variables, validate_function, format_function, encode_function, decode_function, labels=None, precision=1e-10):
 		"""
 		(list, list, list, float)->None
 		Save general parameters of the rule
@@ -9,7 +9,7 @@ class Custom(Constrain):
 
 		#Initialize the supper class
 		params=validate_function, format_function, encode_function, decode_function
-		super().__init__(variables, params, labels)
+		super().__init__(variables, params, labels, precision)
 
 		#Save appropriate parameters
 		self.validate_function=validate_function

@@ -1,7 +1,7 @@
 from COIM.constrain import *
 
 class ConstantSum(Constrain):
-	def __init__(self, variables, reference_variable, constant_sum, weights=1, labels=None):
+	def __init__(self, variables, reference_variable, constant_sum, weights=1, labels=None, precision=1e-10):
 		"""
 		(list, str, float, float/list, list)->None
 		Save general parameters of the rule
@@ -14,7 +14,7 @@ class ConstantSum(Constrain):
 		#Initialize the supper class
 		variables=variables
 		params=constant_sum
-		super().__init__(variables, params, labels)
+		super().__init__(variables, params, labels, precision)
 
 		#Save appropriate parameters
 		self.sum=constant_sum
