@@ -47,6 +47,7 @@ class MulScalar(Constrain):
 		Apply the developed formulas to reduce the dataframe columns.
 		a'=a if |K|>1 else b
 		"""
+		df=df.copy()
 		if abs(self.K)<=1:
 			df[self.labels[self.A]]=df[self.B]
 		else:
@@ -60,6 +61,8 @@ class MulScalar(Constrain):
 		Apply the reverse formulas to restore the original columns
 		and propagate the errors.
 		"""
+		df=df.copy()
+		errors=errors.copy()
 		if abs(self.K)<=1:
 			df.rename(columns={self.labels[self.A]:self.B}, inplace=True)
 			df[self.A]=df[self.B]/self.K

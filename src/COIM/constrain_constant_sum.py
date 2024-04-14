@@ -37,6 +37,7 @@ class ConstantSum(Constrain):
 		Must return the complete dataframe.
 		sum_{i=0}^N W_i * a_i = K
 		"""
+		df=df.copy()
 		df["sum"]=0
 		for weight, var in zip(self.weights, self.all_variables):
 			assert var in df, f"Variable {var} not in dataframe"
@@ -73,6 +74,7 @@ class ConstantSum(Constrain):
 		Apply the developed formulas to reduce the dataframe columns.
 		a_i'=\frac{a_i}{a_0 K}
 		"""
+		df=df.copy()
 		for var in self.variables:
 			df[self.labels[var]]=df[var]/(self.sum*df[self.A0])
 		df.drop(columns=self.variables+[self.A0], inplace=True)
@@ -84,6 +86,8 @@ class ConstantSum(Constrain):
 		Apply the reverse formulas to restore the original columns
 		and propagate the errors.
 		"""
+		df=df.copy()
+		errors=errors.copy()
 
 		#Calculate sums
 		df["sum"]=0
