@@ -3,6 +3,9 @@ import sys
 sys.path.insert(1,'../src')
 from COIM.operator import ConstrainOperator, Custom
 import numpy as np
+import logging as lg
+
+lg.getLogger().setLevel(lg.DEBUG)
 
 k=3
 
@@ -10,7 +13,7 @@ def vali(df, vars, labels):
 	df[labels[0]]=k*df[vars[0]]
 	df_filter=df[df["nk"]!=df["kn"]]
 	assert len(df_filter)==0, "Does not conform to rule"
-	df=df.drop(labels[0], axis=1)
+	df.drop(columns=labels[0], inplace=True)
 	return df
 
 def form(vars, labels):
@@ -25,32 +28,45 @@ def deco(df, vars, labels, errors):
 	errors[labels[0]]=k*errors[vars[0]]
 	return df, errors
 
-def test_custom():
+def test_custom(verbose=False):
+	lg.info(f"test_custom tests a 100 rows, 2 columns DataFrame where nk={k}*n")
 	df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
 	df=pd.DataFrame(df.T, columns=["n"])
 	df["nk"]=k*df["n"]
-	print("Orginal dataset")
-	print(df.head())
+	if verbose:
+		print("Orginal dataset")
+		print(df.head())
 
 	CO=ConstrainOperator()
 	CUST=Custom(["n", "nk"], vali, form, enco, deco, labels=["kn"])
 	CO.add_rule(CUST)
 
 	new_df=CO.encode_dataframe(df)
-	print("Encoded dataset")
-	print(new_df.head())
+	if verbose:
+		print("Encoded dataset")
+		print(new_df.head())
 
 	errors=pd.DataFrame([[0.01]], columns=["n"])
-	print("Errors")
-	print(errors.head())
+	if verbose:
+		print("Errors")
+		print(errors.head())
 
 	new_df, errors=CO.decode_dataframe(new_df, errors)
-	print("Decoded dataset")
-	print(new_df.head())
-	print("Decoded errors")
-	print(errors.head())
+	if verbose:
+		print("Decoded dataset")
+		print(new_df.head())
+		print("Decoded errors")
+		print(errors.head())
 
-	CO.summary()
+	if verbose:
+		CO.summary()
+
+	diff=df.compare(new_df)
+	if len(diff)>0:
+		lg.error("Decoded DataFrame does not match original one.")
+		lg.debug(diff.head())
+
+	assert len(diff)==0
 
 if __name__=="__main__":
-	test_custom()
+	test_custom(True)
