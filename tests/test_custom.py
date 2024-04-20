@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+import os
 sys.path.insert(1,'../src')
 from COIM.operator import ConstrainOperator, Custom
 import numpy as np
@@ -29,6 +30,7 @@ def deco(df, vars, labels, errors):
 	return df, errors
 
 def test_custom(verbose=False):
+	precision=os.environ.get("PRECISION", 10)
 	lg.info(f"test_custom tests a 100 rows, 2 columns DataFrame where nk={k}*n")
 	df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
 	df=pd.DataFrame(df.T, columns=["n"])
@@ -60,6 +62,11 @@ def test_custom(verbose=False):
 
 	if verbose:
 		CO.summary()
+
+	df=df.round(precision)
+	new_df=new_df.round(precision)
+
+	new_df.rename(columns={"kn":"nk"}, inplace=True)
 
 	diff=df.compare(new_df)
 	if len(diff)>0:

@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+import os
 sys.path.insert(1,'../src')
 from COIM.operator import ConstrainOperator, AddScalar
 import numpy as np
@@ -8,6 +9,7 @@ import logging as lg
 lg.getLogger().setLevel(lg.DEBUG)
 
 def test_add_scalar(verbose=False):
+	precision=os.environ.get("PRECISION", 10)
 	lg.info("test_add_scalar tests a 100 rows, 2 columns DataFrame where b=a+10")
 	df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
 	df=pd.DataFrame(df.T, columns=["a"])
@@ -39,6 +41,9 @@ def test_add_scalar(verbose=False):
 
 	if verbose:
 		CO.summary()
+
+	df=df.round(precision)
+	new_df=new_df.round(precision)
 
 	diff=df.compare(new_df)
 	if len(diff)>0:

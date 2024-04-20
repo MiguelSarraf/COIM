@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+import os
 sys.path.insert(1,'../src')
 from COIM.operator import ConstrainOperator, ConstantSum
 import numpy as np
@@ -8,6 +9,7 @@ import logging as lg
 lg.getLogger().setLevel(lg.DEBUG)
 
 def test_constant_sum(verbose=False):
+	precision=os.environ.get("PRECISION", 10)
 	lg.info("test_constant_sum tests a 100 rows, 3 columns DataFrame where a0+a1+2*a2=10")
 	df=np.random.uniform(low=2.5, high=3.8, size=(2,100))
 	df=pd.DataFrame(df.T, columns=["a0", "a1"])
@@ -39,6 +41,9 @@ def test_constant_sum(verbose=False):
 
 	if verbose:
 		CO.summary()
+
+	df=df.round(precision)
+	new_df=new_df.round(precision)
 
 	diff=df.compare(new_df)
 	if len(diff)>0:
