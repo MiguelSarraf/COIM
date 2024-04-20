@@ -45,6 +45,7 @@ class AddScalar(Constrain):
 		(DataFrame)->DataFrame
 		Apply the developed formulas to reduce the dataframe columns.
 		"""
+		df=df.copy()
 		df.drop(columns=self.B, inplace=True)
 		return df
 
@@ -54,6 +55,8 @@ class AddScalar(Constrain):
 		Apply the reverse formulas to restore the original columns
 		and propagate the errors.
 		"""
+		df=df.copy()
+		errors=errors.copy()
 		df[self.B]=df[self.A]+self.K
 		errors[self.B]=errors[self.A]
 		return df, errors

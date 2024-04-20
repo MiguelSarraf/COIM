@@ -24,6 +24,7 @@ class Custom(Constrain):
 		Check if the rule is attended by the dataframe.
 		Must return the complete dataframe.
 		"""
+		df=df.copy()
 		return self.validate_function(df, self.variables, self.labels)
 
 	def format_rule(self):
@@ -38,6 +39,7 @@ class Custom(Constrain):
 		(DataFrame)->DataFrame
 		Apply the developed formulas to reduce the dataframe columns.
 		"""
+		df=df.copy()
 		return self.encode_function(df, self.variables, self.labels)
 
 	def decode_dataframe(self, df, errors):
@@ -46,4 +48,6 @@ class Custom(Constrain):
 		Apply the reverse formulas to restore the original columns
 		and propagate the errors.
 		"""
+		df=df.copy()
+		errors=errors.copy()
 		return self.decode_function(df, self.variables, self.labels, errors)
