@@ -10,16 +10,16 @@ lg.getLogger().setLevel(lg.DEBUG)
 
 def test_constant_sum(verbose=False):
 	precision=os.environ.get("PRECISION", 10)
-	lg.info("test_constant_sum tests a 100 rows, 3 columns DataFrame where a0+a1+2*a2=10")
-	df=np.random.uniform(low=2.5, high=3.8, size=(2,100))
+	lg.info("test_constant_sum tests a 100 rows, 3 columns DataFrame where a0+a1+2*a2=1")
+	df=np.random.uniform(low=.25, high=.38, size=(2,100))
 	df=pd.DataFrame(df.T, columns=["a0", "a1"])
-	df["a2"]=(10-df["a0"]-df["a1"])/2
+	df["a2"]=(1-df["a0"]-df["a1"])/2
 	if verbose:
 		print("Orginal dataset")
 		print(df.head())
 
 	CO=ConstrainOperator()
-	CS=ConstantSum(variables=["a0", "a1", "a2"], reference_variable="a0", constant_sum=10, weights=[1,1,2], labels=["new_a1", "new_a2"])
+	CS=ConstantSum(variables=["a0", "a1", "a2"], reference_variable="a0", constant_sum=1, weights=[1,1,2], labels=["new_a1", "new_a2"])
 	CO.add_rule(CS)
 
 	new_df=CO.encode_dataframe(df)
