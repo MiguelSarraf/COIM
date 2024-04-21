@@ -7,7 +7,6 @@ import numpy as np
 import logging as lg
 
 lg.getLogger().setLevel(lg.DEBUG)
-
 k=3
 
 def vali(df, vars, labels):
