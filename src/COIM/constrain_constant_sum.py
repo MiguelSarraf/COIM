@@ -51,8 +51,7 @@ class ConstantSum(Constrain):
 			raise ValueError(f"The following lines does not conform to rule {cont}\n{df_filter}")
 
 		#Remove unnecessary columns
-		df=df.drop("sum", axis=1)
-		df=df.drop("diff", axis=1)
+		df.drop(columns=["sum", "diff"], inplace=True)
 		return df
 
 	def format_rule(self):
