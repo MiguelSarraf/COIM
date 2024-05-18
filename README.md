@@ -2,6 +2,17 @@
 
 Constrain Operator for Inferential Models is a simple tool for pre and pos processing of data to eliminate redunduncy in datasets caused by dependency rules between the variables/columns.
 
+# Status
+
+![PyPI - Version](https://img.shields.io/pypi/v/COIM)
+![PyPI - License](https://img.shields.io/pypi/l/COIM)
+![PyPI - Status](https://img.shields.io/pypi/status/COIM)
+![GitHub commits since tagged version](https://img.shields.io/github/commits-since/MiguelSarraf/COIM/v0.0.2)
+![GitHub milestone details](https://img.shields.io/github/milestones/progress-percent/MiguelSarraf/COIM/1)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/COIM)
+![GitHub repo size](https://img.shields.io/github/repo-size/MiguelSarraf/COIM)
+![Static Badge](https://img.shields.io/badge/pytest-100%25-green)
+
 ## Usage
 
 To start using COIM, import into your code the operator class, which orquestrates the constrains and define an instance.
