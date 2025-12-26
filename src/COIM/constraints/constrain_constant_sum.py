@@ -1,4 +1,4 @@
-from COIM.constrain import *
+from COIM.constraints.constrain import *
 
 class ConstantSum(Constrain):
 	def __init__(self, variables, reference_variable, constant_sum, weights=1, labels=None, precision=1e-10):

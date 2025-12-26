@@ -1,4 +1,4 @@
-from COIM.constrain import *
+from COIM.constraints.constrain import *
 
 class Custom(Constrain):
 	def __init__(self, variables, validate_function, format_function, encode_function, decode_function, labels=None, precision=1e-10):
