@@ -19,18 +19,21 @@ class Constrain:
         self.labels = labels
         self.precision = precision
 
-    def validate_dataframe(self, df):
+    def validate_dataframe(self, df, position):
         """
         Check if the rule is attended by the dataframe.
 
         Must return the complete dataframe.
-        If there are any inconsistencies, must raise an error.
 
         Args:
             df (pd.DataFrame): The input DataFrame to be validated
+            position (int): The position of the rule inside the operator
 
         Returns:
             df (pd.DataFrame): The input DataFrame unmodified
+
+        Raises:
+            ValueError: If there are any non-conformant lines
         """
         return df
 

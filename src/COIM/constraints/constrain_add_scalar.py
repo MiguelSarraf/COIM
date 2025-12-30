@@ -1,62 +1,99 @@
-from COIM.constraints.constrain import *
+"""Definition of add scalar constraint."""
+
+
+from COIM.constraints.constrain import Constrain
+
 
 class AddScalar(Constrain):
-	def __init__(self, base_variable, target_variable, constant, labels=None, precision=1e-10):
-		"""
-		(list, list, list, float)->None
-		Save general parameters of the rule
-		"""
+    """General class to store the constraint rule."""
 
-		#Garantee parameters are consistent
-		assert not labels, "Labels not needed for add_scalar"
+    def __init__(self, base_variable, target_variable, constant, labels=None, precision=1e-10):
+        """
+        Save general parameters of the rule.
 
-		#Initialize the supper class
-		variables=[base_variable, target_variable]
-		params=[constant]
-		super().__init__(variables, params, labels, precision)
+        Args:
+            base_variable (str): name for the base value in DataFrame
+            target_variable (str): name for the target value in DataFrame
+            constant (float): the difference between target_variable and base_variable
+            labels (list): names for the new columns created
+            precision (list): precision to be used in DataFrame validation
+        """
+        # Garantee parameters are consistent
+        assert not labels, "Labels not needed for add_scalar"
 
-		#Save appropriate parameters
-		self.K=constant
-		self.A=base_variable
-		self.B=target_variable
+        # Initialize the supper class
+        variables = [base_variable, target_variable]
+        params = [constant]
+        super().__init__(variables, params, labels, precision)
 
-	def validate_dataframe(self, df, cont):
-		"""
-		(DataFrame)->DataFrame
-		Check if the rule is attended by the dataframe.
-		Must return the complete dataframe.
-		"""
-		
-		#Check if rule conforms
-		df_filter=df[abs(df[self.B]-(df[self.A]+self.K))>self.precision]# b-(a+K)
-		if len(df_filter)!=0:
-			raise ValueError(f"The following lines does not conform to rule {cont}\n{df_filter}")
-		return df
+        # Save appropriate parameters
+        self.const_K = constant
+        self.column_a = base_variable
+        self.column_b = target_variable
 
-	def format_rule(self):
-		"""
-		(None)->str
-		Returns a string describing the rule.
-		"""
-		return f"{self.A}+{self.K}={self.B}"
+    def validate_dataframe(self, df, position):
+        """
+        Check if the rule is attended by the dataframe.
 
-	def encode_dataframe(self, df):
-		"""
-		(DataFrame)->DataFrame
-		Apply the developed formulas to reduce the dataframe columns.
-		"""
-		df=df.copy()
-		df.drop(columns=self.B, inplace=True)
-		return df
+        Must return the complete dataframe.
 
-	def decode_dataframe(self, df, errors):
-		"""
-		(DataFrame, DataFrame)->DataFrame, DataFrame
-		Apply the reverse formulas to restore the original columns
-		and propagate the errors.
-		"""
-		df=df.copy()
-		errors=errors.copy()
-		df[self.B]=df[self.A]+self.K
-		errors[self.B]=errors[self.A]
-		return df, errors
+        Args:
+            df (pd.DataFrame): The input DataFrame to be validated
+            position (int): The position of the rule inside the operator
+
+        Returns:
+            df (pd.DataFrame): The input DataFrame unmodified
+
+        Raises:
+            ValueError: If there are any non-conformant lines
+        """
+        df_filter = df.copy()
+
+        # Check if rule conforms
+        df_filter["calculated_rule"] = df[self.column_b] - (df[self.column_a] + self.const_K)
+        df_filter = df_filter[abs(df_filter["calculated_rule"]) > self.precision]
+        if len(df_filter) != 0:
+            message = f"The following lines does not conform to rule {position}\n{df_filter}"
+            raise ValueError(message)
+        return df
+
+    def format_rule(self):
+        """
+        Return a string describing the rule.
+
+        Returns:
+            rule (str): The string with the mathematical expression for the contraint
+        """
+        return f"{self.column_a}+{self.const_K}={self.column_b}"
+
+    def encode_dataframe(self, df):
+        """
+        Apply the developed formulas to reduce the dataframe columns.
+
+        Args:
+            df (pd.DataFrame): The input DataFrame to be encoded
+
+        Returns:
+            df (pd.DataFrame): The encoded DataFrame
+        """
+        df = df.copy()
+        df.drop(columns=self.column_b, inplace=True)
+        return df
+
+    def decode_dataframe(self, df, errors):
+        """
+        Apply the reverse formulas to restore the original columns and propagate the errors.
+
+        Args:
+            df (pd.DataFrame): Encoded values outputed from the inferential model
+            errors (pd.DataFrame): Errors for each encoded field
+
+        Returns:
+            df (pd.DataFrame): Decoded values, true outputs from the inferential model
+            errors (pd.DataFrame): Errors for each decoded true field
+        """
+        df = df.copy()
+        errors = errors.copy()
+        df[self.column_b] = df[self.column_a] + self.const_K
+        errors[self.column_b] = errors[self.column_a]
+        return df, errors
