@@ -6,5 +6,10 @@ jobs:
     name: check_lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - run: checks/lint_files.sh
+      - name: Checkout to main
+        uses: actions/checkout@main
+
+      - name: Check if all files have lint logs
+        run: |
+            chmod +x ./checks/lint_files.sh
+            ./checks/lint_files.sh
