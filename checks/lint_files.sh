@@ -11,10 +11,11 @@ TESTS_SEARCH_STR='test*.py'
 TESTS="$TESTS_PATH$TESTS_SEARCH_STR"
 
 LOGS_PATH='lint_output/'
-RESULT_PATH='lint_result.csv'
+RESULT_PATH='lint_result.md'
 OK_STRING=':) No issues found.'
 
-echo 'path;num_warnings' > $RESULT_PATH
+echo '|path|num_issues|' > $RESULT_PATH
+echo '|---|---|' >> $RESULT_PATH
 
 name='operator'
 log="$LOGS_PATH$name.log"
@@ -26,10 +27,10 @@ if [ -f $log ]; then
 		num_warns=$(sed -n '$=' $log)
 	fi
 else
-	num_warns=-1
+	num_warns='Module not found'
 	RET=1
 fi
-echo "$name;$num_warns" >> $RESULT_PATH
+echo "|$name|$num_warns|" >> $RESULT_PATH
 
 for file in $CONSTRAINTS; do
 	script="${file/$CONSTRAINTS_PATH/''}"
@@ -43,10 +44,10 @@ for file in $CONSTRAINTS; do
 			num_warns=$(sed -n '$=' $log)
 		fi
 	else
-		num_warns=-1
+		num_warns='Module not found'
 		RET=1
 	fi
-	echo "$name;$num_warns" >> $RESULT_PATH
+	echo "|$name|$num_warns|" >> $RESULT_PATH
 done
 
 for file in $TESTS; do
@@ -61,10 +62,10 @@ for file in $TESTS; do
 			num_warns=$(sed -n '$=' $log)
 		fi
 	else
-		num_warns=-1
+		num_warns='Module not found'
 		RET=1
 	fi
-	echo "$name;$num_warns" >> $RESULT_PATH
+	echo "|$name|$num_warns|" >> $RESULT_PATH
 done
 
 exit $RET
