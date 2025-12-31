@@ -1,0 +1,20 @@
+name: lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: check_lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run lint checks
+        run: |
+          chmod +x checks/lint_files.sh
+          checks/lint_files.sh
