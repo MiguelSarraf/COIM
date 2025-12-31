@@ -1,56 +1,75 @@
-import pandas as pd
-import sys
-import os
-sys.path.insert(1,'../src')
-from COIM.operator import ConstrainOperator, MulScalar
-import numpy as np
+"""Implements the unitary test for MulScalar rule."""
+
+
 import logging as lg
+import os
+import sys
+
+import numpy as np
+import pandas as pd
+
+sys.path.insert(1, '../src')
+from COIM.constraints import MulScalar
+from COIM.operator import ConstrainOperator
 
 lg.getLogger().setLevel(lg.DEBUG)
 
+
 def test_mul_scalar(verbose=False):
-	precision=os.environ.get("PRECISION", 10)
-	lg.info("test_constant_sum tests a 100 rows, 2 columns DataFrame where b=10*a")
-	df=np.random.uniform(low=0, high=10, size=(1,100)).astype("int")
-	df=pd.DataFrame(df.T, columns=["a"])
-	df["b"]=df["a"]*10
-	if verbose:
-		print("Orginal dataset")
-		print(df.head())
+    """
+    Test the usage of the MulScalar constraint.
 
-	CO=ConstrainOperator()
-	MS=MulScalar(base_variable="a", target_variable="b", constant=10, labels=["new_a"])
-	CO.add_rule(MS)
+    Args:
+        verbose (bool): Whether or not the test should be verbose
+    """
+    precision = os.environ.get("PRECISION", 10)
+    lg.info("test_constant_sum tests a 100 rows, 2 columns DataFrame where b=10*a")
+    df = np.random.uniform(low=0, high=10, size=(1, 100)).astype("int")
+    df = pd.DataFrame(df.T, columns=["a"])
+    df["b"] = df["a"] * 10
+    if verbose:
+        print("Orginal dataset")
+        print(df.head())
 
-	new_df=CO.encode_dataframe(df)
-	if verbose:
-		print("Encoded dataset")
-		print(new_df.head())
+    operator = ConstrainOperator()
+    constraint_mul_scalar = MulScalar(
+        base_variable="a",
+        target_variable="b",
+        constant=10,
+        labels=["new_a"],
+    )
+    operator.add_rule(constraint_mul_scalar)
 
-	errors=pd.DataFrame([[0.0005]], columns=["new_a"])
-	if verbose:
-		print("Errors")
-		print(errors.head())
+    new_df = operator.encode_dataframe(df)
+    if verbose:
+        print("Encoded dataset")
+        print(new_df.head())
 
-	new_df, errors=CO.decode_dataframe(new_df, errors)
-	if verbose:
-		print("Decoded dataset")
-		print(new_df.head())
-		print("Decoded errors")
-		print(errors.head())
+    errors = pd.DataFrame([[0.0005]], columns=["new_a"])
+    if verbose:
+        print("Errors")
+        print(errors.head())
 
-	if verbose:
-		CO.summary()
+    new_df, errors = operator.decode_dataframe(new_df, errors)
+    if verbose:
+        print("Decoded dataset")
+        print(new_df.head())
+        print("Decoded errors")
+        print(errors.head())
 
-	df=df.round(precision)
-	new_df=new_df.round(precision)
+    if verbose:
+        operator.summary()
 
-	diff=df.compare(new_df)
-	if len(diff)>0:
-		lg.error("Decoded DataFrame does not match original one.")
-		lg.debug(diff.head())
+    df = df.round(precision)
+    new_df = new_df.round(precision)
 
-	assert len(diff)==0
+    diff = df.compare(new_df)
+    if len(diff) > 0:
+        lg.error("Decoded DataFrame does not match original one.")
+        lg.debug(diff.head())
 
-if __name__=="__main__":
-	test_mul_scalar(True)
+    assert len(diff) == 0
+
+
+if __name__ == "__main__":
+    test_mul_scalar(True)
