@@ -160,7 +160,7 @@ class ConstrainOperator:
         previous_cols = len(df.columns)
         cont = 1
         for rule in self.operations:
-            df = rule.validate_dataframe(df, cont)
+            rule.validate_dataframe(df, cont)
             df = rule.encode_dataframe(df)
             cont += 1
         later_variance = df.var().sum()

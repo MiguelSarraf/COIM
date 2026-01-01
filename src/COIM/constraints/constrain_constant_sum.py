@@ -66,9 +66,6 @@ class ConstantSum(Constrain):
             df (pd.DataFrame): The input DataFrame to be validated
             position (int): The position of the rule inside the operator
 
-        Returns:
-            df (pd.DataFrame): The input DataFrame unmodified
-
         Raises:
             ValueError: If there are any non-conformant lines
         """
@@ -88,7 +85,6 @@ class ConstantSum(Constrain):
 
         # Remove unnecessary columns
         df.drop(columns=["sum", "diff"], inplace=True)
-        return df
 
     def format_rule(self):
         """

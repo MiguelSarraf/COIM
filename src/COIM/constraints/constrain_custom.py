@@ -50,14 +50,11 @@ class Custom(Constrain):
             df (pd.DataFrame): The input DataFrame to be validated
             position (int): The position of the rule inside the operator
 
-        Returns:
-            df (pd.DataFrame): The input DataFrame unmodified
-
         Raises:
             ValueError: If there are any non-conformant lines
         """
         df = df.copy()
-        return self.validate_function(df, self.variables, self.labels, self.precision, position)
+        self.validate_function(df, self.variables, self.labels, self.precision, position)
 
     def format_rule(self):
         """

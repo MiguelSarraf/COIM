@@ -1,1 +1,2 @@
-:) No issues found.
+src/COIM/constraints/constrain.py|32:1|DAR402 Excess exception(s) in Raises section: +r ValueError [flake8]
+src/COIM/constraints/constrain.py|35:8|Unnecessary pass statement (W0107, unnecessary-pass) [pylint]

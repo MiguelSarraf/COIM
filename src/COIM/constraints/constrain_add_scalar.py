@@ -41,9 +41,6 @@ class AddScalar(Constrain):
             df (pd.DataFrame): The input DataFrame to be validated
             position (int): The position of the rule inside the operator
 
-        Returns:
-            df (pd.DataFrame): The input DataFrame unmodified
-
         Raises:
             ValueError: If there are any non-conformant lines
         """
@@ -55,7 +52,6 @@ class AddScalar(Constrain):
         if len(df_filter) != 0:
             message = f"The following lines does not conform to rule {position}\n{df_filter}"
             raise ValueError(message)
-        return df
 
     def format_rule(self):
         """

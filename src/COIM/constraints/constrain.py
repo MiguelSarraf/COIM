@@ -29,13 +29,10 @@ class Constrain:
             df (pd.DataFrame): The input DataFrame to be validated
             position (int): The position of the rule inside the operator
 
-        Returns:
-            df (pd.DataFrame): The input DataFrame unmodified
-
         Raises:
             ValueError: If there are any non-conformant lines
         """
-        return df
+        pass
 
     def format_rule(self):
         """
