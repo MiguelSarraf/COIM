@@ -83,9 +83,6 @@ class ConstantSum(Constrain):
             message = f"The following lines does not conform to rule {position}\n{df_filter}"
             raise ValueError(message)
 
-        # Remove unnecessary columns
-        df.drop(columns=["sum", "diff"], inplace=True)
-
     def format_rule(self):
         """
         Return a string describing the rule.
@@ -113,7 +110,6 @@ class ConstantSum(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
-        df = df.copy()
         for var in self.variables:
             df[self.labels[var]] = df[var] / (self.sum * df[self.column_a0])
         df.drop(columns=self.variables + [self.column_a0], inplace=True)
@@ -131,9 +127,6 @@ class ConstantSum(Constrain):
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
-        df = df.copy()
-        errors = errors.copy()
-
         # Calculate sums
         df["sum"] = 0
         errors["sum"] = 0

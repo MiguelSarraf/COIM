@@ -47,6 +47,8 @@ class MulScalar(Constrain):
             ValueError: If there are any non-conformant lines
         """
         # Check if rule conforms
+        df_filter = df.copy()
+
         df_filter = df[abs(df[self.column_b] - df[self.column_a] * self.const_K) > self.precision]
         if len(df_filter) != 0:
             message = f"The following lines does not conform to rule {position}\n{df_filter}"
@@ -73,7 +75,6 @@ class MulScalar(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
-        df = df.copy()
         if abs(self.const_K) <= 1:
             df[self.labels[self.column_a]] = df[self.column_b]
         else:
@@ -93,8 +94,6 @@ class MulScalar(Constrain):
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
-        df = df.copy()
-        errors = errors.copy()
         if abs(self.const_K) <= 1:
             df.rename(columns={self.labels[self.column_a]: self.column_b}, inplace=True)
             df[self.column_a] = df[self.column_b] / self.const_K

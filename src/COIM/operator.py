@@ -155,6 +155,10 @@ class ConstrainOperator:
         Returns:
             df (pd.DataFrame): DataFrame with encoded values
         """
+        # It is important to always create a copy of the input DataFrame before operating on it.
+        # This way, we can make sure we will not dirt the user data.
+        df = df.copy()
+
         self.execution_parameters["encoded"] = True
         previous_variance = df.var().sum()
         previous_cols = len(df.columns)
@@ -181,6 +185,10 @@ class ConstrainOperator:
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
+        # It is important to always create a copy of the input DataFrame before operating on it.
+        # This way, we can make sure we will not dirt the user data.
+        df = df.copy()
+
         self.execution_parameters["decoded"] = True
         previous_error = (errors / df.mean()).mean().mean()
         for rule in self.operations[::-1]:

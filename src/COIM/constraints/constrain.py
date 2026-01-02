@@ -32,7 +32,9 @@ class Constrain:
         Raises:
             ValueError: If there are any non-conformant lines
         """
-        pass
+        # It is important to always create a copy of the input DataFrame before operating on it.
+        # This way, we can make sure we will not dirt the user data.
+        df = df.copy()
 
     def format_rule(self):
         """

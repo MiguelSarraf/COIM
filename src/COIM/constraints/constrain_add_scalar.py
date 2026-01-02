@@ -44,13 +44,13 @@ class AddScalar(Constrain):
         Raises:
             ValueError: If there are any non-conformant lines
         """
-        df_filter = df.copy()
+        df = df.copy()
 
         # Check if rule conforms
-        df_filter["calculated_rule"] = df[self.column_b] - (df[self.column_a] + self.const_K)
-        df_filter = df_filter[abs(df_filter["calculated_rule"]) > self.precision]
-        if len(df_filter) != 0:
-            message = f"The following lines does not conform to rule {position}\n{df_filter}"
+        df["calculated_rule"] = df[self.column_b] - (df[self.column_a] + self.const_K)
+        df = df[abs(df["calculated_rule"]) > self.precision]
+        if len(df) != 0:
+            message = f"The following lines does not conform to rule {position}\n{df}"
             raise ValueError(message)
 
     def format_rule(self):
@@ -72,7 +72,6 @@ class AddScalar(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
-        df = df.copy()
         df.drop(columns=self.column_b, inplace=True)
         return df
 
@@ -88,8 +87,6 @@ class AddScalar(Constrain):
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
-        df = df.copy()
-        errors = errors.copy()
         df[self.column_b] = df[self.column_a] + self.const_K
         errors[self.column_b] = errors[self.column_a]
         return df, errors

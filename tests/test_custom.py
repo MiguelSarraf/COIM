@@ -27,14 +27,13 @@ def validate(df, variables, labels, precision, position):
         precision (float): Refer to the base constraint module
         position (int): Refer to the base constraint module
 
-    Returns:
-        df (pd.DataFrame): Refer to the base constraint module
+        Raises:
+            ValueError: If there are any non-conformant lines
     """
+    df = df.copy()
     df[labels[0]] = k * df[variables[0]]
     df_filter = df[df["nk"] - df["kn"] > precision]
     assert len(df_filter) == 0, f"Does not conform to rule {position}"
-    df.drop(columns=labels[0], inplace=True)
-    return df
 
 
 def get_format(variables, labels):

@@ -75,7 +75,6 @@ class Custom(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
-        df = df.copy()
         return self.encode_function(df, self.variables, self.labels)
 
     def decode_dataframe(self, df, errors):
@@ -90,6 +89,4 @@ class Custom(Constrain):
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
-        df = df.copy()
-        errors = errors.copy()
         return self.decode_function(df, self.variables, self.labels, errors)
