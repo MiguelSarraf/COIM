@@ -1,0 +1,2 @@
+src/COIM/constraints/constrain_mul_scalar.py|None:None|would reformat [black]
+src/COIM/constraints/constrain_mul_scalar.py|31:8|Attribute name "const_K" doesn't conform to snake_case naming style (C0103, invalid-name) [pylint]

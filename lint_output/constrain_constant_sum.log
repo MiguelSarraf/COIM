@@ -1,0 +1,2 @@
+src/COIM/constraints/constrain_constant_sum.py|None:None|would reformat [black]
+src/COIM/constraints/constrain_constant_sum.py|160:9|TODO: Study the difference between the error calculation methods and make it a parameter. (W0511, fixme) [pylint]

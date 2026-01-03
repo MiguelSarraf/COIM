@@ -1,0 +1,2 @@
+src/COIM/constraints/constrain.py|22:37|Unused argument 'position' (W0613, unused-argument) [pylint]
+src/COIM/constraints/constrain.py|32:1|DAR402 Excess exception(s) in Raises section: +r ValueError [flake8]

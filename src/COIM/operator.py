@@ -1,153 +1,264 @@
-from prettytable import PrettyTable
+"""
+This module defines the ConstrainOperator class.
+
+This class is responsible for creating a sequence of contraints and operating them.
+"""
+
 import pickle
-from COIM.constrain_custom import *
-from COIM.constrain_constant_sum import *
-from COIM.constrain_add_scalar import *
-from COIM.constrain_mul_scalar import *
+
+from prettytable import PrettyTable
+
 
 class ConstrainOperator:
-	"""
-	Class to orchestrate many rules sequencially
-	"""
-	def __init__(self, name="COIM", print_width=30):
-		"""
-		(str, int)->None
-		Initiallize class parameters
-		"""
-		self.name=name
-		self.operations=[]
-		self.print_width=print_width
-		self._encoded=False
-		self._decoded=False
+    """Class to orchestrate many constraints rules sequencially."""
 
-	def add_rule(self, rule, index=None):
-		"""
-		(Constrain, int)->None
-		Insert a rule in the series in the specified position.
-		"""
-		if index:
-			assert isinstance(index, int) and index>=0 and index<len(self.operations), "Index is not valid"
-			self.operations=self.operations[:index]+[rule]+self.operations[index:]
-		else:
-			self.operations.append(rule)
+    def __init__(self, name="COIM", print_width=30):
+        """
+        Initiallize class parameters.
 
-	def show_rules(self, table=None):
-		"""
-		(PrettyTable)->PrettyTable
-		Create table showing the rules in the sequence
-		"""
-		if not table: table=PrettyTable()
-		table.title=f"{self.name} rules"
-		table.field_names=["Position", "Constrain"]
-		table.min_width=self.print_width
-		rules_list=[[i, op.format_rule()] for i, op in zip(range(1, len(self.operations)+1), self.operations)]
-		table.add_rows(rules_list)
-		return table
+        Args:
+            name (str): Constraint operator model name
+            print_width (int): Line width to be used to print statistics
+        """
+        self.name = name
+        self.operations = []
+        self.print_width = print_width
+        self.execution_parameters = {
+            "encoded": False,
+            "decoded": False,
+        }
 
-	def show_encode(self, table=None):
-		"""
-		(PrettyTable)->PrettyTable
-		Create table showing the gains on the encoding phase
-		"""
-		if not self._encoded: return
-		if not table: table=PrettyTable()
-		table.title=f"{self.name} encode results"
-		table.field_names=["Variable", "Value"]
-		table.min_width=self.print_width
-		table.add_row(["Variation reduction", f"{round(100*(self._variance_gain), 3)} %"])
-		table.add_row(["Columns reduction", f"{round(100*(self._col_gain), 3)} %"])
-		return table
+    def add_rule(self, rule, index=None):
+        """
+        Insert a rule in the series in the specified position.
 
-	def show_decode(self, table=None):
-		"""
-		(PrettyTable)->PrettyTable
-		Create table showing the gains on the decoding phase
-		"""
-		if not self._decoded: return
-		if not table: table=PrettyTable()
-		table.title=f"{self.name} decode results"
-		table.field_names=["Variable", "Value"]
-		table.min_width=self.print_width
-		table.add_row(["Error/mean value reduction", f"{round(100*(self._error_value_gain), 3)} %"])
-		return table
+        Args:
+            rule (Constrain): Constraint to be inserted into the operator
+            index (int): Position the constraint must occupy
+        """
+        if index:
+            assert (
+                isinstance(index, int) and
+                0 <= index < len(self.operations)
+            ), "Index is not valid"
+            self.operations = self.operations[:index] + [rule] + self.operations[index:]
+        else:
+            self.operations.append(rule)
 
-	def summary(self):
-		"""
-		(None)->None
-		Print the summary of the model
-		"""
-		t_rules=str(self.show_rules())
-		t_encode=str(self.show_encode())
-		t_decode=str(self.show_decode())
-		result=t_rules
-		if self._encoded: result+=t_encode[t_encode.index("\n"):]
-		if self._decoded: result+=t_decode[t_decode.index("\n"):]
-		print(result)
+    def show_rules(self, table=None):
+        """
+        Create table showing the rules in the sequence.
 
-	def encode_dataframe(self, df):
-		"""
-		(DataFrame)->DataFrame
-		Apply all the rules in order
-		"""
-		#sdf=self.validate_dataframe(df)
-		self._encoded=True
-		previous_variance=df.var().sum()
-		previous_cols=len(df.columns)
-		cont=1
-		for rule in self.operations:
-			df=rule.validate_dataframe(df, cont)
-			df=rule.encode_dataframe(df)
-			cont+=1
-		later_variance=df.var().sum()
-		later_cols=len(df.columns)
-		self._variance_gain=1-later_variance/previous_variance
-		self._col_gain=1-later_cols/previous_cols
-		return df
+        Args:
+            table (PrettyTable): PrettyTable with previous output values, if present
 
-	def decode_dataframe(self, df, errors):
-		"""
-		(DataFrame, DataFrame)->DataFrame, DataFrame
-		Deapply all the rules in reverse order and calculate the propagated errors
-		"""
-		self._decoded=True
-		previous_error=(errors/df.mean()).mean().mean()
-		for rule in self.operations[::-1]:
-			df, errors=rule.decode_dataframe(df, errors)
-		later_error=(errors/df.mean()).mean().mean()
-		self._error_value_gain=1-later_error/previous_error
-		return df, errors
+        Returns:
+            table (PrettyTable): PrettyTable with new values appended
+        """
+        if not table:
+            table = PrettyTable()
+        table.title = f"{self.name} rules"
+        table.field_names = ["Position", "Constrain"]
+        table.min_width = self.print_width
+        # Pair rules with their positions to show on table
+        rules_list = [
+            [
+                i,
+                op.format_rule(),
+            ]
+            for i, op in
+            zip(
+                range(
+                    1,
+                    len(self.operations) + 1,
+                ),
+                self.operations,
+            )
+        ]
+        table.add_rows(rules_list)
+        return table
 
-	def dump(self, path):
-		"""
-		(str)->None
-		Saves the parameters to a pickle file
-		"""
-		descriptor_dict={
-			"name":self.name,
-			"print_width":self.print_width,
-			"operations":self.operations
-		}
-		file=open(path, "wb")
-		pickle.dump(descriptor_dict, file)
-		file.close()
+    def show_encode(self, table=None):
+        """
+        Create table showing the gains on the encoding phase.
 
-	def load(self, path, mode="replace"):
-		"""
-		(str, str)->None
-		Retrieves the parameters from a pickle file
-		mode can be 'replace' or 'append'
-		"""
-		assert mode in ["replace", "append"], "mode must be 'replace' or 'append'"
-		file=open(path, "rb")
-		descriptor_dict=pickle.load(file)
-		file.close()
-		self._encoded=False
-		self._decoded=False
-		if mode=="replace":
-			self.name=descriptor_dict["name"]
-			self.print_width=descriptor_dict["print_width"]
-			self.operations=descriptor_dict["operations"]
-		elif mode=="append":
-			self.name-=descriptor_dict["name"]+"_"
-			self.print_width=max(self.print_width, descriptor_dict["print_width"])
-			self.operations.append(descriptor_dict["operations"])
+        Args:
+            table (PrettyTable): PrettyTable with previous output values, if present
+
+        Returns:
+            table (PrettyTable): PrettyTable with new values appended
+        """
+        if not self.execution_parameters["encoded"]:
+            return table
+        if not table:
+            table = PrettyTable()
+        table.title = f"{self.name} encode results"
+        table.field_names = ["Variable", "Value"]
+        table.min_width = self.print_width
+        table.add_row(
+            [
+                "Variation reduction",
+                f"{round(100*(self.execution_parameters['variance_gain']), 3)} %",
+            ],
+        )
+        table.add_row(
+            [
+                "Columns reduction",
+                f"{round(100*(self.execution_parameters['col_gain']), 3)} %",
+            ],
+        )
+        return table
+
+    def show_decode(self, table=None):
+        """
+        Create table showing the gains on the decoding phase.
+
+        Args:
+            table (PrettyTable): PrettyTable with previous output values, if present
+
+        Returns:
+            table (PrettyTable): PrettyTable with new values appended
+        """
+        if not self.execution_parameters["decoded"]:
+            return table
+        if not table:
+            table = PrettyTable()
+        table.title = f"{self.name} decode results"
+        table.field_names = ["Variable", "Value"]
+        table.min_width = self.print_width
+        table.add_row(
+            [
+                "Error/mean value reduction",
+                f"{round(100*(self.execution_parameters['error_value_gain']), 3)} %",
+            ],
+        )
+        return table
+
+    def summary(self):
+        """Print the summary of the model."""
+        # Generate each individual table output
+        t_rules = str(self.show_rules())
+        t_encode = str(self.show_encode())
+        t_decode = str(self.show_decode())
+
+        # Remove the first line of each secondary result so that there are no double headers line.
+        result = t_rules
+        if self.execution_parameters["encoded"]:
+            result += t_encode[t_encode.index("\n"):]
+        if self.execution_parameters["decoded"]:
+            result += t_decode[t_decode.index("\n"):]
+        print(result)
+
+    def encode_dataframe(self, df):
+        """
+        Apply all the rules in order.
+
+        Args:
+            df (pd.DataFrame): DataFrame with true values
+
+        Returns:
+            df (pd.DataFrame): DataFrame with encoded values
+        """
+        # It is important to always create a copy of the input DataFrame before operating on it.
+        # This way, we can make sure we will not dirt the user data.
+        df = df.copy()
+
+        # Save original statistics
+        previous_variance = df.var().sum()
+        previous_cols = len(df.columns)
+
+        # Apply all rules
+        position = 1
+        for rule in self.operations:
+            rule.validate_dataframe(df, position)
+            df = rule.encode_dataframe(df)
+            position += 1
+
+        # Save new statistics
+        later_variance = df.var().sum()
+        later_cols = len(df.columns)
+
+        # Calculate gains after encoding and save parameters
+        self.execution_parameters["variance_gain"] = 1 - later_variance / previous_variance
+        self.execution_parameters["col_gain"] = 1 - later_cols / previous_cols
+        self.execution_parameters["encoded"] = True
+
+        return df
+
+    def decode_dataframe(self, df, errors):
+        """
+        Deapply all the rules in reverse order and calculate the propagated errors.
+
+        Args:
+            df (pd.DataFrame): Encoded values outputed from the inferential model
+            errors (pd.DataFrame): Errors for each encoded field
+
+        Returns:
+            df (pd.DataFrame): Decoded values, true outputs from the inferential model
+            errors (pd.DataFrame): Errors for each decoded true field
+        """
+        # It is important to always create a copy of the input DataFrame before operating on it.
+        # This way, we can make sure we will not dirt the user data.
+        df = df.copy()
+
+        # Save original statistics
+        previous_error = (errors / df.mean()).mean().mean()
+
+        # Deapply all rules in reverse order
+        for rule in self.operations[::-1]:
+            df, errors = rule.decode_dataframe(df, errors)
+
+        # Save new statistics
+        later_error = (errors / df.mean()).mean().mean()
+
+        # Calculate gains after decoding and save parameters
+        self.execution_parameters["error_value_gain"] = 1 - later_error / previous_error
+        self.execution_parameters["decoded"] = True
+
+        return df, errors
+
+    def dump(self, path):
+        """
+        Save the parameters to a pickle file.
+
+        Args:
+            path (str): is the file path to be save the model into
+        """
+        # Create a dictionary with the core operator attributes
+        descriptor_dict = {
+            "name": self.name,
+            "print_width": self.print_width,
+            "operations": self.operations,
+        }
+
+        # Save dictionary in pickle format
+        with open(path, "wb") as file:
+            pickle.dump(descriptor_dict, file)
+
+    def load(self, path, mode="replace"):
+        """
+        Retrieve saved operator from a pickle file into the operator.
+
+        Args:
+            path (str): is the file path to be loaded from
+            mode (str): can be 'replace' or 'append'
+        """
+        assert mode in ["replace", "append"], "mode must be 'replace' or 'append'"
+
+        # Load dictionary from pickle format
+        with open(path, "rb") as file:
+            descriptor_dict = pickle.load(file)
+
+        # Reset all executions
+        self.execution_parameters["encoded"] = False
+        self.execution_parameters["decoded"] = False
+
+        # Save retrieved attributes according to mode rule
+        if mode == "replace":
+            self.name = descriptor_dict["name"]
+            self.print_width = descriptor_dict["print_width"]
+            self.operations = descriptor_dict["operations"]
+        elif mode == "append":
+            self.name -= descriptor_dict["name"] + "_"
+            self.print_width = max(self.print_width, descriptor_dict["print_width"])
+            self.operations.append(descriptor_dict["operations"])

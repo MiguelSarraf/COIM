@@ -1,0 +1,2 @@
+src/COIM/constraints/constrain_custom.py|None:None|would reformat [black]
+src/COIM/constraints/constrain_custom.py|53:1|DAR402 Excess exception(s) in Raises section: +r ValueError [flake8]
