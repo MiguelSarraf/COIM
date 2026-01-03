@@ -60,7 +60,6 @@ class ConstantSum(Constrain):
         Check if the rule is attended by the dataframe.
 
         Must return the complete dataframe.
-        sum_{i=0}^N W_i * a_i = K
 
         Args:
             df (pd.DataFrame): The input DataFrame to be validated
@@ -70,13 +69,16 @@ class ConstantSum(Constrain):
             ValueError: If there are any non-conformant lines
         """
         df = df.copy()
+
+        # Check if rule conforms: Σ(W_i * a_i) = K
+
+        # Iterate all variables adding their values
         df["sum"] = 0
         for weight, var in zip(self.weights, self.all_variables):
             assert var in df, f"Variable {var} not in dataframe"
-            df["sum"] += df[var] * weight  # sum_{i=0}^N W_i * a_i
-            df["diff"] = abs(df["sum"] - self.sum)  # sum_{i=0}^N W_i * a_i - K
+            df["sum"] += df[var] * weight  # Σ(W_i * a_i)
 
-        # Check if rule conforms
+        df["diff"] = abs(df["sum"] - self.sum)  # Σ(W_i * a_i) - K
         df_filter = df[df["diff"] > self.precision]
         if len(df_filter) != 0:
             print(self.sum)
@@ -90,19 +92,22 @@ class ConstantSum(Constrain):
         Returns:
             rule (str): The string with the mathematical expression for the contraint
         """
-        rule = ""
-        for weight, var in zip(self.weights, self.all_variables):
-            if weight == 1:
-                rule += f"{var}+"
-            else:
-                rule += f"{weight}*{var}+"
-        return rule[:-1] + f"={self.sum}"
+        rule = "+".join(
+            [
+                var
+                if weight == 1 
+                else f"{weight}*{var}"
+                for weight, var in zip(
+                    self.weights,
+                    self.all_variables
+                )
+            ]
+        )
+        return rule + f"={self.sum}"
 
     def encode_dataframe(self, df):
         """
         Apply the developed formulas to reduce the dataframe columns.
-
-        a_i'=\frac{a_i}{a_0 K}
 
         Args:
             df (pd.DataFrame): The input DataFrame to be encoded
@@ -110,9 +115,10 @@ class ConstantSum(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
+        # a_i' = a_i/(a_0 * K)
         for var in self.variables:
             df[self.labels[var]] = df[var] / (self.sum * df[self.column_a0])
-        df.drop(columns=self.variables + [self.column_a0], inplace=True)
+        df.drop(columns=self.all_variables, inplace=True)
         return df
 
     def decode_dataframe(self, df, errors):
@@ -131,23 +137,33 @@ class ConstantSum(Constrain):
         df["sum"] = 0
         errors["sum"] = 0
         for weight, var in zip(self.weights[1:], self.variables):
-            # sum_{i=1}^N W_i * a_i
+            # Σ(W_i * a_i')
             df["sum"] += df[self.labels[var]] * weight
-            # sum_{j=1}^NW_j^2*Delta a_j'^2
+            # Σ(W_j^2 * Δa_j'^2)
             errors["sum"] += errors[self.labels[var]] ** 2 * weight ** 2
 
         # Retrieve variables
-        # a_0={K}/{W_0+K*sum_{i=1}^N W_i * a_i'}
+
+        # a_0 = K/(W_0 + K * Σ(W_i * a_i'))
         df[self.column_a0] = self.sum / (self.weights[0] + self.sum * df["sum"])
-        # a_i=a_i'a_0K
+
+        # a_i = a_i' * a_0 * K
         for var in self.variables:
             df[var] = df[self.labels[var]] * df[self.column_a0] * self.sum
 
         # Propagate errors
+
+        # As the errors formulas uses the values for the variables themselves, each line in the
+        # output would have a individual error. To avoid this boredom, I chose to calculate a
+        # single error with the mean of the variable values. This was, obviously, a questionable
+        # choice and I did not study the impact of this strategy at the time of implementation.
+        # TODO: Study the difference between the error calculation methods and make it a parameter.
         means = df.aggregate("mean")
-        # Delta a_0=a_0^2*sqrt{sum_{j=1}^NW_j^2*Delta a_j'^2}
+
+        # Δa_0 = a_0^2 * √(Σ(W_j^2 * Δa_j'^2))
         errors[self.column_a0] = (means[self.column_a0] ** 2) * (errors["sum"] ** .5)
-        # Delta a_i=|(K-W_i*a_i)/(a_0W_i)|*sqrt{a_0^4W_i^2*Delta a_i'^2+Delta a_0^2}
+
+        # Δa_i = |(K - W_i * a_i) / (a_0 * W_i)| * √(a_0^4 * W_i^2 * Δa_i'^2 + Δa_0^2)
         for weight, var in zip(self.weights[1:], self.variables):
             factor = (self.sum - weight * means[var]) / (means[self.column_a0] * weight)
             error_sum = (
@@ -159,4 +175,5 @@ class ConstantSum(Constrain):
         # Remove unnecessary columns
         df.drop(columns=[self.labels[var] for var in self.variables] + ["sum"], inplace=True)
         errors.drop(columns=[self.labels[var] for var in self.variables] + ["sum"], inplace=True)
+
         return df, errors

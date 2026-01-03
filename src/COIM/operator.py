@@ -60,6 +60,7 @@ class ConstrainOperator:
         table.title = f"{self.name} rules"
         table.field_names = ["Position", "Constrain"]
         table.min_width = self.print_width
+        # Pair rules with their positions to show on table
         rules_list = [
             [
                 i,
@@ -135,9 +136,12 @@ class ConstrainOperator:
 
     def summary(self):
         """Print the summary of the model."""
+        # Generate each individual table output
         t_rules = str(self.show_rules())
         t_encode = str(self.show_encode())
         t_decode = str(self.show_decode())
+
+        # Remove the first line of each secondary result so that there are no double headers line.
         result = t_rules
         if self.execution_parameters["encoded"]:
             result += t_encode[t_encode.index("\n"):]
@@ -159,18 +163,26 @@ class ConstrainOperator:
         # This way, we can make sure we will not dirt the user data.
         df = df.copy()
 
-        self.execution_parameters["encoded"] = True
+        # Save original statistics
         previous_variance = df.var().sum()
         previous_cols = len(df.columns)
-        cont = 1
+
+        # Apply all rules
+        position = 1
         for rule in self.operations:
-            rule.validate_dataframe(df, cont)
+            rule.validate_dataframe(df, position)
             df = rule.encode_dataframe(df)
-            cont += 1
+            position += 1
+
+        # Save new statistics
         later_variance = df.var().sum()
         later_cols = len(df.columns)
+
+        # Calculate gains after encoding and save parameters
         self.execution_parameters["variance_gain"] = 1 - later_variance / previous_variance
         self.execution_parameters["col_gain"] = 1 - later_cols / previous_cols
+        self.execution_parameters["encoded"] = True
+
         return df
 
     def decode_dataframe(self, df, errors):
@@ -189,12 +201,20 @@ class ConstrainOperator:
         # This way, we can make sure we will not dirt the user data.
         df = df.copy()
 
-        self.execution_parameters["decoded"] = True
+        # Save original statistics
         previous_error = (errors / df.mean()).mean().mean()
+
+        # Deapply all rules in reverse order
         for rule in self.operations[::-1]:
             df, errors = rule.decode_dataframe(df, errors)
+
+        # Save new statistics
         later_error = (errors / df.mean()).mean().mean()
+
+        # Calculate gains after decoding and save parameters
         self.execution_parameters["error_value_gain"] = 1 - later_error / previous_error
+        self.execution_parameters["decoded"] = True
+
         return df, errors
 
     def dump(self, path):
@@ -204,11 +224,14 @@ class ConstrainOperator:
         Args:
             path (str): is the file path to be save the model into
         """
+        # Create a dictionary with the core operator attributes
         descriptor_dict = {
             "name": self.name,
             "print_width": self.print_width,
             "operations": self.operations,
         }
+
+        # Save dictionary in pickle format
         with open(path, "wb") as file:
             pickle.dump(descriptor_dict, file)
 
@@ -221,10 +244,16 @@ class ConstrainOperator:
             mode (str): can be 'replace' or 'append'
         """
         assert mode in ["replace", "append"], "mode must be 'replace' or 'append'"
+
+        # Load dictionary from pickle format
         with open(path, "rb") as file:
             descriptor_dict = pickle.load(file)
+
+        # Reset all executions
         self.execution_parameters["encoded"] = False
         self.execution_parameters["decoded"] = False
+
+        # Save retrieved attributes according to mode rule
         if mode == "replace":
             self.name = descriptor_dict["name"]
             self.print_width = descriptor_dict["print_width"]

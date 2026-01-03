@@ -46,7 +46,7 @@ class AddScalar(Constrain):
         """
         df = df.copy()
 
-        # Check if rule conforms
+        # Check if rule conforms: b = a + K
         df["calculated_rule"] = df[self.column_b] - (df[self.column_a] + self.const_K)
         df = df[abs(df["calculated_rule"]) > self.precision]
         if len(df) != 0:
@@ -72,6 +72,7 @@ class AddScalar(Constrain):
         Returns:
             df (pd.DataFrame): The encoded DataFrame
         """
+        # a' = a
         df.drop(columns=self.column_b, inplace=True)
         return df
 
@@ -87,6 +88,14 @@ class AddScalar(Constrain):
             df (pd.DataFrame): Decoded values, true outputs from the inferential model
             errors (pd.DataFrame): Errors for each decoded true field
         """
+        # Retrieve variables
+
+        # a = a'
+        # b = a' + K
         df[self.column_b] = df[self.column_a] + self.const_K
+
+        # Propagate errors
+
+        # Δb = Δa = Δa'
         errors[self.column_b] = errors[self.column_a]
         return df, errors
