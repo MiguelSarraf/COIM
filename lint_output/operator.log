@@ -1,3 +1,3 @@
 src/COIM/operator.py|None:None|would reformat [black]
 src/COIM/operator.py|7:1|S403 Consider possible security implications associated with pickle module. [flake8]
-src/COIM/operator.py|217:1|S301 Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. [flake8]
+src/COIM/operator.py|250:1|S301 Pickle and modules that wrap it can be unsafe when used to deserialize untrusted data, possible security issue. [flake8]

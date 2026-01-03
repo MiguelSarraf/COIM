@@ -95,13 +95,13 @@ class ConstantSum(Constrain):
         rule = "+".join(
             [
                 var
-                if weight == 1 
+                if weight == 1
                 else f"{weight}*{var}"
                 for weight, var in zip(
                     self.weights,
-                    self.all_variables
+                    self.all_variables,
                 )
-            ]
+            ],
         )
         return rule + f"={self.sum}"
 

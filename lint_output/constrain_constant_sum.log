@@ -1,3 +1,2 @@
 src/COIM/constraints/constrain_constant_sum.py|None:None|would reformat [black]
-src/COIM/constraints/constrain_constant_sum.py|105:None|D301: Use r""" if any backslashes in a docstring [pydocstyle]
-src/COIM/constraints/constrain_constant_sum.py|105:1|D301 Use r""" if any backslashes in a docstring [flake8]
+src/COIM/constraints/constrain_constant_sum.py|160:9|TODO: Study the difference between the error calculation methods and make it a parameter. (W0511, fixme) [pylint]
