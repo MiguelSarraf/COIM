@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "COIM"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Miguel Sarraf", email="miguel.sarraf@alumni.usp.br" },
 ]
@@ -12,23 +12,24 @@ description = "Constrain Operator for Inferential Models is a simple tool for pr
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "pandas==2.0.3",
-  "numpy==1.20.3",
-  "prettytable==3.9.0",
-  "pytest==8.1.1"
+  "pandas>=2.0.3",
+  "numpy>=1.20.3",
+  "prettytable>=3.9.0",
+  "pytest>=8.1.1",
+  "yala>=3.2.0"
 ]
 classifiers = [
-	"Development Status :: 4 - Beta",
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: Science/Research",
-    "Natural Language :: English",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Software Development",
-    "Topic :: Software Development :: Pre-processors"
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Pre-processors"
 ]
 
 [project.urls]
